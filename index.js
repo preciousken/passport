@@ -11,17 +11,16 @@ app.use(session({
 const passport = require('passport');
 
 
-
 app.use(passport.initialize());
 
-require('./googleAuth')
+// require('./googleAuth')
+require('./facebookAuth');
 
-app.get("/google",passport.authenticate("google",{scope: ["profile","email"]}));
+app.get('/login/facebook', passport.authenticate("facebook",{scope:['email']}));
 
-
-app.get('/google/callback',passport.authenticate('google',{failureRedirect:'/login'}),(req,res)=>{
-    res.send('logged in!')
+app.get("/facebook",passport.authenticate("facebook"),(req,res)=>{
+    // 
+    console.log('welcome');
 })
-
 
 app.listen('3000',()=>console.log('app : 3000'))
