@@ -1,25 +1,43 @@
 const express = require('express');
-const session = require('express-session')
 const app = express();
-app.use(session({
-    secret: 'your-secret-key',
-    resave: false,
-    saveUninitialized: false
-  }));
-  
-
 const passport = require('passport');
+const session = require('express-session');
 
 
+// Middleware for session support
+app.use(session({
+  secret: 'YOUR_SESSION_SECRET',
+  resave: true,
+  saveUninitialized: true,
+}));
+
+require('./facebookAuth')
+
+// Initialize Passport and restore authentication state, if any, from the session
 app.use(passport.initialize());
+app.use(passport.session());
 
-require('./facebookAuth');
 
-app.get('/login/facebook', passport.authenticate("facebook",{scope:['email']}));
+// Facebook authentication route
+app.get('/auth/facebook', passport.authenticate('facebook'));
 
-app.get("/facebook",passport.authenticate("facebook"),(req,res)=>{
-    // 
-    console.log('welcome');
+
+// Facebook callback route
+app.get('/auth/facebook/callback',
+  passport.authenticate('facebook', {
+    successRedirect: '/dashboard',
+    failureRedirect: '/login',
+  })
+);
+
+// Dashboard
+app.get('/dashboard',(req,res)=>{
+  res.send('welcome to dashboard')
 })
 
-app.listen('3000',()=>console.log('app : 3000'))
+
+// Start the server
+const port = 3000;
+app.listen(port, () => {
+  console.log(`Server running on http://localhost:${port}`);
+});
