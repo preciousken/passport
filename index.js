@@ -13,7 +13,6 @@ const passport = require('passport');
 
 app.use(passport.initialize());
 
-// require('./googleAuth')
 require('./facebookAuth');
 
 app.get('/login/facebook', passport.authenticate("facebook",{scope:['email']}));
